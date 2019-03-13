@@ -1,3 +1,7 @@
+
+# Created by https://www.gitignore.io/api/macos,linux,matlab,windows
+# Edit at https://www.gitignore.io/?templates=macos,linux,matlab,windows
+
 ### Linux ###
 *~
 
@@ -95,3 +99,5 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# End of https://www.gitignore.io/api/macos,linux,matlab,windows
