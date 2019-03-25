@@ -1,4 +1,4 @@
-% image defects
+% Fabric image defects
 %
 % Ramon Elena
 % Serlonghi Nicola
@@ -7,7 +7,7 @@ clear all;
 close all;
 clc;
 
-[image, yImageSize, xImageSize] = loadImage("1.jpg");
+[image, yImageSize, xImageSize] = loadImage("23.jpg");
 
 % Constants
 startPatternX = 1;
@@ -21,21 +21,29 @@ diskSize = 2;
 
 normxcorrImage1 = normxcorr2(pattern1, image);
 normxcorrImage2 = normxcorr2(pattern2, image);
-normxcorrImage3 = normxcorr2(pattern3,image);
-normxcorrImage4 = normxcorr2(pattern4,image);
+normxcorrImage3 = normxcorr2(pattern3, image);
+normxcorrImage4 = normxcorr2(pattern4, image);
 normxcorrImage = (normxcorrImage1 + normxcorrImage2 + normxcorrImage3 + normxcorrImage4) / 4;
+[xr, xc] = size(normxcorrImage);
 normxcorrImage = normxcorrImage(patternWidth : end - patternWidth, patternWidth : end - patternWidth);
 normxcorrAbsoluteImage = abs(normxcorrImage);
 
 mask = normxcorrAbsoluteImage < maskValue;
 se = strel('disk', diskSize);
-finalMask = imopen(mask,se);
-figure, imagesc(finalMask);
+finalMask = imopen(mask, se);
 
-image = image(9 : end - 11, 9 : end - 11);
+[r, c] = size(image);
+
+diffr = xr - r;
+diffc = xc - c;
+
+image = image(floor(diffr / 2) : end - round(diffr / 2), floor(diffc / 2) : end - round(diffc / 2));
 nextImage = image;
 nextImage(finalMask) = 255;
 finalImage = cat(3, nextImage, image, image);
 
-figure; imshowpair(image, finalImage, 'montage');
-
+figure; title 'Output finale';
+subplot(221); imshow(image); title 'Immagine originale';
+subplot(222); imshow(finalImage); title 'Immagine con difetti evidenziati';
+subplot(223); imagesc(mask); title 'Maschera';
+subplot(224); imagesc(finalMask); title 'Maschera dopo taglio';

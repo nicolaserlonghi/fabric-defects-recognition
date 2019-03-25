@@ -2,24 +2,19 @@ function [pattern1, pattern2, pattern3, pattern4] = getPatterns(image, startPatt
     [imageSizeY, imageSizeX] = size(image);
     
     startPattern = image(startPatternX : (startPatternX + patternWidth), startPatternY : (startPatternY + patternWidth));
-    
-    % Show standard pattern
-    figure;
-    subplot(221); imagesc(image); axis image; colormap gray; hold on;
-    rectangle('position',[startPatternX, startPatternY, patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
-    
+   
     % conv2(image, pattern);
     convolvedImage = real(ifft2(fft2(image) .* fft2(startPattern, imageSizeY, imageSizeX)));
-    subplot(222); imshow(convolvedImage,[]) % Scale image to appropriate display range.
-
     imageWithThreshold = applyThreshold(convolvedImage, threshold);
     
     [yPositionOfOneValue, xPositionOfOneValue] = find(imageWithThreshold == 1);
     
-    
+    % positionOfXElements = find(xPositionOfOneValue < (imageSizeX - patternWidth) & yPositionOfOneValue < (imageSizeY - patternWidth));
     positionOfXElements = find(xPositionOfOneValue < (imageSizeX - patternWidth));
-    numberOfXElements = size(positionOfXElements);
-    halfNumberOfXElements = floor(numberOfXElements(1) / 2);
+    positionOfYElements = find(yPositionOfOneValue < (imageSizeY - patternWidth));
+    minPositionElement = min(size(positionOfXElements), size(positionOfYElements));
+    %numberOfXElements = size(minPositionElement);
+    halfNumberOfXElements = floor(minPositionElement(1) / 2);
     quarterNumberOfXElements = floor(halfNumberOfXElements / 2);
 
     yPositionOfOneValueWithPatternWidth = yPositionOfOneValue + patternWidth;
@@ -30,15 +25,16 @@ function [pattern1, pattern2, pattern3, pattern4] = getPatterns(image, startPatt
     pattern3 = image(imageSizeY - patternWidth : imageSizeY, imageSizeX - patternWidth : imageSizeX);
     pattern4 = image(yPositionOfOneValue(quarterNumberOfXElements) : yPositionOfOneValueWithPatternWidth(quarterNumberOfXElements), xPositionOfOneValue(quarterNumberOfXElements) : xPositionOfOneValueWithPatternWidth(quarterNumberOfXElements));
     
-    % Show patterns position
-    subplot(223); imshow(imageWithThreshold);
-    figure;imagesc(image); axis image; colormap gray; hold on;
+    % Plot
+    figure; title 'TDF';
+    subplot(221); imshow(image); title 'Immagine con pattern di partenza';
+    rectangle('position',[startPatternX, startPatternY, patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
+    subplot(222); imshow(convolvedImage, []); title 'Immagine post convoluzione';
+    subplot(223); imshow(imageWithThreshold, []); title 'Immagine dopo threshold';
+    subplot(224); imshow(image); title 'Immagine con pattern finali';
     rectangle('position', [yPositionOfOneValue(1), xPositionOfOneValue(1), patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
     rectangle('position',[yPositionOfOneValue(halfNumberOfXElements), xPositionOfOneValue(halfNumberOfXElements), patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
     rectangle('position', [imageSizeY - patternWidth, imageSizeX - patternWidth, patternWidth, patternWidth], 'EdgeColor', [1 0 0]);
     rectangle('position',[yPositionOfOneValue(quarterNumberOfXElements), xPositionOfOneValue(quarterNumberOfXElements), patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
-    
-    
-
 end
 
