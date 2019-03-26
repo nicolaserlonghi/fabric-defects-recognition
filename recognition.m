@@ -1,7 +1,17 @@
+% Analizza l'immagine e cerca eventuali difetti
+%
+% INPUT
+% imageIndex: nome dell'immagine senza estensione
+%
+% OUTPUT
+% image: l'immagine iniziale
+% finalImage: l'immagine iniziale con i difetti evidenziati
+% mask: la maschera prima dell'operazione di strel
+% finalMask: la mascherza finale, dopo l'operazione di strel
 function [image, finalImage, mask, finalMask] = recognition(imageIndex)
     [image, yImageSize, xImageSize] = loadImage(strcat(int2str(imageIndex), '.jpg'));
 
-    % Costanti di partenza
+    % Costanti
     startPatternX = 1;
     startPatternY = 1;
     patternWidth = 9.5;
@@ -16,7 +26,7 @@ function [image, finalImage, mask, finalMask] = recognition(imageIndex)
     [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(image, startPatternX, startPatternY, patternWidth, threshold, patternStartWidth);
 
     % Viene calcolata la cross-correlazione normalizzata utilizzando i quattro
-    % pattern restituiti dalla funzione getPatterns()
+    % pattern restituiti dalla funzione precednete
     normxcorrImage1 = normxcorr2(pattern1, image);
     normxcorrImage2 = normxcorr2(pattern2, image);
     normxcorrImage3 = normxcorr2(pattern3, image);
@@ -26,11 +36,10 @@ function [image, finalImage, mask, finalMask] = recognition(imageIndex)
     normxcorrImage = normxcorrImage(patternWidth : end - patternWidth, patternWidth : end - patternWidth);
     normxcorrAbsoluteImage = abs(normxcorrImage);
 
-    % Viene creata la maschera iniziale per iniziare la raffinazione automatica
-    % di essa
+    % Viene determinata la maschera iniziale
     mask = normxcorrAbsoluteImage < maskValue;
     
-    % Viaene calcolato il numero di pixel che sono identificati come errore e
+    % Viene calcolato il numero di pixel che sono identificati come errore e
     % la maschera iniziale viene adeguata in relazione ad essi in modo da
     % ridurre i falsi positivi
     errorDots = find(mask == 1);
@@ -51,12 +60,13 @@ function [image, finalImage, mask, finalMask] = recognition(imageIndex)
         end
     end
 
-    % Vengono rimossi i falsi positivi rimasti dalle raffinazioni
-    % precedenti
+    % La maschera iniziale viene raffinata applicando l'operazione di strel
+    % Rimuove i falsi positivi
     se = strel('disk', diskSize);
-    
-    % Final plot
     finalMask = imopen(mask, se);
+    
+    % Ricalcolo le dimensioni dell'immagine iniziale ignorando i bordi
+    % che contengono valori di cross-correlazione invalidi (TODO: è giusto?)
     diffr = xcorrY - yImageSize;
     diffc = xcorrX - xImageSize;
     image = image(floor(diffr / 2) : end - round(diffr / 2), floor(diffc / 2) : end - round(diffc / 2));

@@ -1,12 +1,27 @@
-% Trova i pattern migliori su cui effettuare la cross-correlazione
-% partendo da un pattern posizionato in alto a sinistra,
-% effettuando una convoluzione dalla quale vengono determinate
+% Trova i pattern migliori su cui effettuare la cross-correlazione.
+% Partendo da un pattern posizionato in alto a sinistra,
+% effettua una convoluzione dalla quale vengono determinate
 % le zone che potrebbero essere prive di errore
+%
+% INPUT
+% image: l'immagine da cui estrarre i pattern
+% startPatternX: l'indice di colonna del punto di partenza del pattern di partenza
+% startPatternY: l'indice di riga del punto di partenza del pattern di
+% partenza
+% patternWidth: TODO: che è?
+% threshold: threshold di partenza
+% startPatternWidth: dimensione del pattern di partenza
+%
+% OUTPUT
+% pattern1: primo pattern riconosciuto
+% pattern2: secondo pattern riconosciuto
+% pattern3: terzo pattern riconosciuto
+% pattern4: quarto pattern riconosciuto
+% patternWidth: dimensione dei 4 pattern riconosciuti
 function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(image, startPatternX, startPatternY, patternWidth, threshold, patternStartWidth)
     [imageSizeY, imageSizeX] = size(image);
     numberOfImageCells = imageSizeY * imageSizeX;
     
-        
     % Viene trovata la dimensione ideale del pattern controllando che
     % il numero di pixel che non contengono errori
     % non sia superiore al 85% del numero dei pixel presenti nell'immagine
@@ -29,7 +44,8 @@ function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(im
     end
    
     % Viene impostata la threshold di default nel caso che le dimensioni
-    % del pattern di partenza siano corrette
+    % del pattern di partenza non siano mai state variate dalla condizione
+    % di cui sopra
     if(storeThreshold == threshold)
         threshold = 85;
         convolvedImage = real(ifft2(fft2(image) .* fft2(startPattern, imageSizeY, imageSizeX)));
@@ -60,8 +76,8 @@ function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(im
     pattern3 = image(imageSizeY - patternWidth : imageSizeY, imageSizeX - patternWidth : imageSizeX);
     pattern4 = image(yPositionOfOneValue(quarterNumberOfXElements) : yPositionOfOneValueWithPatternWidth(quarterNumberOfXElements), xPositionOfOneValue(quarterNumberOfXElements) : xPositionOfOneValueWithPatternWidth(quarterNumberOfXElements));
     
-    % Plot
-    % TODO:
+    % Visualizza gli step del processo di cui sopra.
+    % TODO: lo teniamo?
     %{
     figure; title 'TDF';
     subplot(221); imshow(image); title 'Immagine con pattern di partenza';

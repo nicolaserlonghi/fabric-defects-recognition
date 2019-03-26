@@ -3,10 +3,17 @@
 % Ramon Elena
 % Serlonghi Nicola
 % Tonini Francesco
+%
+% Questo programma è stato sviluppato e testato con immagini 512x512 di
+% tessiture di vario colore, motivo e difetto.
+% TODO: aggiungere altri vincoli
+
 clear all;
 close all;
 clc;
 
+% Mostro tutte le immagini una dopo l'altra. Il "vero programma" si trova
+% nei file recognition.m, loadImage.m, getPatterns.m e applyThreshold.m
 nOfImages = 34;
 images = cell(nOfImages);
 finalImages = cell(nOfImages);
@@ -27,5 +34,8 @@ for i = 1 : nOfImages
     subplot(222); imshow(finalImages{i}); title 'Immagine con difetti evidenziati';
     subplot(223); imagesc(masks{i}); title 'Maschera';
     subplot(224); imagesc(finalMasks{i}); title 'Maschera dopo taglio';
-    % TODO: uiwait(f);
+    
+    % Decommentare la riga successiva se si vuole stampare una finestra alla
+    % volta
+    % uiwait(f);
 end
