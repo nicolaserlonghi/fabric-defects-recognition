@@ -1,12 +1,20 @@
+% Cerca i pattern migliori su cui effettuare la cross-correlazione
+% Partendo da un pattern "sicuramente corretto", posizionato in alto a
+% sinistra, la funzione effettua una convoluzione dalla quale determinano
+% quali zone sono quasi sicuramente prive di errore.
 function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(image, startPatternX, startPatternY, patternWidth, threshold, patternStartWidth)
     [imageSizeY, imageSizeX] = size(image);
     numberOfImageCells = imageSizeY * imageSizeX;
     startPattern = image(startPatternX : (startPatternX + patternStartWidth), startPatternY : (startPatternY + patternStartWidth));
-   
+    
     % conv2(image, pattern);
     convolvedImage = real(ifft2(fft2(image) .* fft2(startPattern, imageSizeY, imageSizeX)));
     imageWithThreshold = applyThreshold(convolvedImage, threshold);
     
+    % Se il numero di celle nere (ovvero celle dove è stato riconosciuto un
+    % errore) è maggiore dell'85% delle celle totali, il pattern base viene
+    % ridimensionato finché non si raggiunge un valore di celle nere
+    % ideale.
     [yPositionOfOneValue, xPositionOfOneValue] = find(imageWithThreshold == 1);
     dimensione = size(yPositionOfOneValue);
     storeThreshold = threshold;
@@ -21,6 +29,10 @@ function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(im
         [yPositionOfOneValue, xPositionOfOneValue] = find(imageWithThreshold == 1);
         dimensione = size(yPositionOfOneValue);
     end
+    
+    % Se i parametri di default sono corretti (quindi non siamo mai entrati
+    % nel ciclo while sopra), imposto i valori di default per la ricerca
+    % dei pattern.
     if(storeThreshold == threshold)
         threshold = 85;
         convolvedImage = real(ifft2(fft2(image) .* fft2(startPattern, imageSizeY, imageSizeX)));
@@ -30,16 +42,15 @@ function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(im
     end
     
     patternWidth = floor(patternWidth);
-    
-    % positionOfXElements = find(xPositionOfOneValue < (imageSizeX - patternWidth) & yPositionOfOneValue < (imageSizeY - patternWidth));
     positionOfXElements = find(xPositionOfOneValue < (imageSizeX - patternWidth));
     positionOfYElements = find(yPositionOfOneValue < (imageSizeY - patternWidth));
+    
+    % Cerco la dimensione minima dei due array così da evitare eccezioni di
+    % overflow
     minPositionElement = min(size(positionOfXElements), size(positionOfYElements));
-    %numberOfXElements = size(minPositionElement);
     
     yPositionOfOneValueWithPatternWidth = yPositionOfOneValue + patternWidth;
     xPositionOfOneValueWithPatternWidth = xPositionOfOneValue + patternWidth;
-    
     halfNumberOfXElements = floor(minPositionElement(1) / 2);
     quarterNumberOfXElements = floor(halfNumberOfXElements / 2);    
     while(yPositionOfOneValue(halfNumberOfXElements) >= (imageSizeY - patternWidth) || xPositionOfOneValue(halfNumberOfXElements) >= (imageSizeX - patternWidth) || yPositionOfOneValueWithPatternWidth(quarterNumberOfXElements) >= (imageSizeY - patternWidth) || xPositionOfOneValueWithPatternWidth(quarterNumberOfXElements) >= (imageSizeX - patternWidth))
@@ -47,13 +58,13 @@ function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(im
         quarterNumberOfXElements = floor(halfNumberOfXElements / 2);
     end
     
-    
     pattern1 = image(yPositionOfOneValue(1) : yPositionOfOneValueWithPatternWidth(1), xPositionOfOneValue(1) : xPositionOfOneValueWithPatternWidth(1));
     pattern2 = image(yPositionOfOneValue(halfNumberOfXElements) : yPositionOfOneValueWithPatternWidth(halfNumberOfXElements), xPositionOfOneValue(halfNumberOfXElements) : xPositionOfOneValueWithPatternWidth(halfNumberOfXElements));
     pattern3 = image(imageSizeY - patternWidth : imageSizeY, imageSizeX - patternWidth : imageSizeX);
     pattern4 = image(yPositionOfOneValue(quarterNumberOfXElements) : yPositionOfOneValueWithPatternWidth(quarterNumberOfXElements), xPositionOfOneValue(quarterNumberOfXElements) : xPositionOfOneValueWithPatternWidth(quarterNumberOfXElements));
     
     % Plot
+    %{
     figure; title 'TDF';
     subplot(221); imshow(image); title 'Immagine con pattern di partenza';
     rectangle('position',[startPatternX, startPatternY, patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
@@ -64,5 +75,6 @@ function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(im
     rectangle('position',[yPositionOfOneValue(halfNumberOfXElements), xPositionOfOneValue(halfNumberOfXElements), patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
     rectangle('position', [imageSizeY - patternWidth, imageSizeX - patternWidth, patternWidth, patternWidth], 'EdgeColor', [1 0 0]);
     rectangle('position',[yPositionOfOneValue(quarterNumberOfXElements), xPositionOfOneValue(quarterNumberOfXElements), patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
+    %}
 end
 
