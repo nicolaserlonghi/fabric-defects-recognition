@@ -27,5 +27,5 @@ for i = 1 : nOfImages
     subplot(222); imshow(finalImages{i}); title 'Immagine con difetti evidenziati';
     subplot(223); imagesc(masks{i}); title 'Maschera';
     subplot(224); imagesc(finalMasks{i}); title 'Maschera dopo taglio';
-    % uiwait(f);
+    % TODO: uiwait(f);
 end
