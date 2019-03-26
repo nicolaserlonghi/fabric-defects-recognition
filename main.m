@@ -7,7 +7,7 @@ clear all;
 close all;
 clc;
 
-nOfImages = 25;
+nOfImages = 34;
 images = cell(nOfImages);
 finalImages = cell(nOfImages);
 masks = cell(nOfImages);
