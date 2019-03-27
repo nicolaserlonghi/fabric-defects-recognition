@@ -65,10 +65,16 @@ function [image, finalImage, mask, finalMask] = recognition(imageIndex)
     se = strel('disk', diskSize);
     finalMask = imopen(mask, se);
     
+    % TODO: controllare commenti e rinominare variabili
+    % conta il numero di pixel gialli, cioè relativi all'errore
     puntiGialli = find(finalMask == 1);
     numeroPuntiGialli = size(puntiGialli);
     numeroTotalePixel = yImageSize * xImageSize;
 
+    % se il numero di pixel errati è troppo basso, quindi secondo i nostri
+    % calcoli è pocco probabile che abbia preso l'errore, abbassiamo lo
+    % strel, in modo tale da superare la nostra soglia di errore, in modo
+    % tale ci assicuriamo immagini più pulite per errori molto fitti
     while(numeroPuntiGialli(1) <= (numeroTotalePixel * 0.00076)) 
         diskSize = diskSize - 1;
         se = strel('disk', diskSize);
