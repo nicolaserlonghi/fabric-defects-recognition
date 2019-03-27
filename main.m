@@ -14,7 +14,7 @@ clc;
 
 % Mostro tutte le immagini una dopo l'altra. Il "vero programma" si trova
 % nei file recognition.m, loadImage.m, getPatterns.m e applyThreshold.m
-nOfImages = 34;
+nOfImages = 31;
 images = cell(nOfImages);
 finalImages = cell(nOfImages);
 masks = cell(nOfImages);

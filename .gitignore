@@ -101,3 +101,9 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/macos,linux,matlab,windows
+
+
+/samples2
+/samples3
+/samples4
+/vecchiaVersione

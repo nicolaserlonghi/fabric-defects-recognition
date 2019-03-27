@@ -18,7 +18,7 @@ function [image, finalImage, mask, finalMask] = recognition(imageIndex)
     patternStartWidth = 125;
     threshold = 90;
     maskValue = 0.07;
-    diskSize = 3;
+    diskSize = 5;
     cumulativeNumber = 0.01;
 
     % Viene chiamata la funzionce che restituisce i 4 pattern migliori che
@@ -64,6 +64,18 @@ function [image, finalImage, mask, finalMask] = recognition(imageIndex)
     % Rimuove i falsi positivi
     se = strel('disk', diskSize);
     finalMask = imopen(mask, se);
+    
+    puntiGialli = find(finalMask == 1);
+    numeroPuntiGialli = size(puntiGialli);
+    numeroTotalePixel = yImageSize * xImageSize;
+
+    while(numeroPuntiGialli(1) <= (numeroTotalePixel * 0.00076)) 
+        diskSize = diskSize - 1;
+        se = strel('disk', diskSize);
+        finalMask = imopen(mask, se);
+        puntiGialli = find(finalMask == 1);
+        numeroPuntiGialli = size(puntiGialli);
+    end
     
     % Ricalcolo le dimensioni dell'immagine iniziale ignorando i bordi
     % che contengono valori di cross-correlazione invalidi (TODO: è giusto?)
