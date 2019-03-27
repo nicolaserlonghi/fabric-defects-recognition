@@ -1,8 +1,8 @@
 % Fabric image defects
 %
-% Ramon Elena
-% Serlonghi Nicola
-% Tonini Francesco
+% Ramon Elena (VR406590)
+% Serlonghi Nicola (VR409046)
+% Tonini Francesco (VR408686)
 %
 % Questo programma è stato sviluppato e testato con immagini 512x512 di
 % tessiture di vario colore, motivo e difetto.

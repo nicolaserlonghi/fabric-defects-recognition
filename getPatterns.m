@@ -28,9 +28,9 @@ function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(im
     convolvedImage = real(ifft2(fft2(image) .* fft2(startPattern, imageSizeY, imageSizeX)));
     imageWithThreshold = applyThreshold(convolvedImage, threshold);
     [yPositionOfOneValue, xPositionOfOneValue] = find(imageWithThreshold == 1);
-    dimensione = size(yPositionOfOneValue);
+    dimension = size(yPositionOfOneValue);
     storeThreshold = threshold;
-    while(dimensione(1) > (numberOfImageCells * 0.85) && patternFourierWidth > 4) 
+    while(dimension(1) > (numberOfImageCells * 0.85) && patternFourierWidth > 4) 
         patternFourierWidth = floor(patternFourierWidth * 0.8);
         patternWidth = patternWidth * 1.05;
         threshold = threshold - 0.87;
@@ -38,10 +38,10 @@ function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(im
         convolvedImage = real(ifft2(fft2(image) .* fft2(startPattern, imageSizeY, imageSizeX)));
         imageWithThreshold = applyThreshold(convolvedImage, threshold);
         [yPositionOfOneValue, xPositionOfOneValue] = find(imageWithThreshold == 1);
-        dimensione = size(yPositionOfOneValue);
+        dimension = size(yPositionOfOneValue);
     end
    
-    % Viene impostata la threshold di default nel caso che le dimensioni
+    % Viene impostata la threshold di default nel caso in cui le dimensioni
     % del pattern di partenza non siano mai state variate dalla condizione
     % di cui sopra
     if(storeThreshold == threshold)
