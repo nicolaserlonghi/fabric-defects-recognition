@@ -60,19 +60,13 @@ function [image, finalImage, mask, finalMask] = recognition(imageIndex)
         end
     end
 
-    % La maschera iniziale viene raffinata applicando l'operazione di strel
-    % Rimuove i falsi positivi
     se = strel('disk', diskSize);
     finalMask = imopen(mask, se);
-    
-    % TODO: controllare commenti e rinominare variabili
-    % conta il numero di pixel gialli, cioè relativi all'errore
+
+    % Viene variata la dimensione dello strell in base al numero di pixel
+    % errati presenti nell'immagine 
     errorDots = find(finalMask == 1);
     nOfErrorDots = size(errorDots);
-
-    % Se il numero di pixel errati è troppo basso, quindi secondo i nostri
-    % calcoli è poco probabile che sia stato riconosciuto l'errore, abbassiamo lo
-    % strel. In questo modo ci assicuriamo immagini più pulite per errori molto fitti
     errorRate = 0.00076;
     while(nOfErrorDots(1) <= (yImageSize * xImageSize * errorRate)) 
         diskSize = diskSize - 1;
@@ -82,8 +76,6 @@ function [image, finalImage, mask, finalMask] = recognition(imageIndex)
         nOfErrorDots = size(errorDots);
     end
     
-    % Ricalcolo le dimensioni dell'immagine iniziale ignorando i bordi
-    % che contengono valori di cross-correlazione invalidi (TODO: è giusto?)
     diffr = xcorrY - yImageSize;
     diffc = xcorrX - xImageSize;
     image = image(floor(diffr / 2) : end - round(diffr / 2), floor(diffc / 2) : end - round(diffc / 2));

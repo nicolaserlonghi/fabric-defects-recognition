@@ -6,11 +6,10 @@
 % INPUT
 % image: l'immagine da cui estrarre i pattern
 % startPatternX: l'indice di colonna del punto di partenza del pattern di partenza
-% startPatternY: l'indice di riga del punto di partenza del pattern di
-% partenza
-% patternWidth: TODO: che è?
+% startPatternY: l'indice di riga del punto di partenza del pattern di partenza
+% patternWidth: dimensione di default del pattern
 % threshold: threshold di partenza
-% startPatternWidth: dimensione del pattern di partenza
+% patternFourierWidth: dimensione del pattern utilizzato per Fourier
 %
 % OUTPUT
 % pattern1: primo pattern riconosciuto
@@ -18,25 +17,24 @@
 % pattern3: terzo pattern riconosciuto
 % pattern4: quarto pattern riconosciuto
 % patternWidth: dimensione dei 4 pattern riconosciuti
-function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(image, startPatternX, startPatternY, patternWidth, threshold, patternStartWidth)
+function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(image, startPatternX, startPatternY, patternWidth, threshold, patternFourierWidth)
     [imageSizeY, imageSizeX] = size(image);
     numberOfImageCells = imageSizeY * imageSizeX;
     
     % Viene trovata la dimensione ideale del pattern controllando che
     % il numero di pixel che non contengono errori
     % non sia superiore al 85% del numero dei pixel presenti nell'immagine
-    startPattern = image(startPatternX : (startPatternX + patternStartWidth), startPatternY : (startPatternY + patternStartWidth));
-    % TODO: conv2(image, pattern);
+    startPattern = image(startPatternX : (startPatternX + patternFourierWidth), startPatternY : (startPatternY + patternFourierWidth));
     convolvedImage = real(ifft2(fft2(image) .* fft2(startPattern, imageSizeY, imageSizeX)));
     imageWithThreshold = applyThreshold(convolvedImage, threshold);
     [yPositionOfOneValue, xPositionOfOneValue] = find(imageWithThreshold == 1);
     dimensione = size(yPositionOfOneValue);
     storeThreshold = threshold;
-    while(dimensione(1) > (numberOfImageCells * 0.85) && patternStartWidth > 4) 
-        patternStartWidth = floor(patternStartWidth * 0.8);
+    while(dimensione(1) > (numberOfImageCells * 0.85) && patternFourierWidth > 4) 
+        patternFourierWidth = floor(patternFourierWidth * 0.8);
         patternWidth = patternWidth * 1.05;
         threshold = threshold - 0.87;
-        startPattern = image(startPatternX : (startPatternX + patternStartWidth), startPatternY : (startPatternY + patternStartWidth));
+        startPattern = image(startPatternX : (startPatternX + patternFourierWidth), startPatternY : (startPatternY + patternFourierWidth));
         convolvedImage = real(ifft2(fft2(image) .* fft2(startPattern, imageSizeY, imageSizeX)));
         imageWithThreshold = applyThreshold(convolvedImage, threshold);
         [yPositionOfOneValue, xPositionOfOneValue] = find(imageWithThreshold == 1);
@@ -77,18 +75,16 @@ function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(im
     pattern4 = image(yPositionOfOneValue(quarterNumberOfXElements) : yPositionOfOneValueWithPatternWidth(quarterNumberOfXElements), xPositionOfOneValue(quarterNumberOfXElements) : xPositionOfOneValueWithPatternWidth(quarterNumberOfXElements));
     
     % Visualizza gli step del processo di cui sopra.
-    % TODO: lo teniamo?
-    %{
-    figure; title 'TDF';
-    subplot(221); imshow(image); title 'Immagine con pattern di partenza';
-    rectangle('position',[startPatternX, startPatternY, patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
-    subplot(222); imshow(convolvedImage, []); title 'Immagine post convoluzione';
-    subplot(223); imshow(imageWithThreshold, []); title 'Immagine dopo threshold';
-    subplot(224); imshow(image); title 'Immagine con pattern finali';
-    rectangle('position', [yPositionOfOneValue(1), xPositionOfOneValue(1), patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
-    rectangle('position',[yPositionOfOneValue(halfNumberOfXElements), xPositionOfOneValue(halfNumberOfXElements), patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
-    rectangle('position', [imageSizeY - patternWidth, imageSizeX - patternWidth, patternWidth, patternWidth], 'EdgeColor', [1 0 0]);
-    rectangle('position',[yPositionOfOneValue(quarterNumberOfXElements), xPositionOfOneValue(quarterNumberOfXElements), patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
-    %}
+%     figure; title 'TDF';
+%     subplot(221); imshow(image); title 'Immagine con pattern di partenza';
+%     rectangle('position',[startPatternX, startPatternY, patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
+%     subplot(222); imshow(convolvedImage, []); title 'Immagine post convoluzione';
+%     subplot(223); imshow(imageWithThreshold, []); title 'Immagine dopo threshold';
+%     subplot(224); imshow(image); title 'Immagine con pattern finali';
+%     rectangle('position', [yPositionOfOneValue(1), xPositionOfOneValue(1), patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
+%     rectangle('position',[yPositionOfOneValue(halfNumberOfXElements), xPositionOfOneValue(halfNumberOfXElements), patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
+%     rectangle('position', [imageSizeY - patternWidth, imageSizeX - patternWidth, patternWidth, patternWidth], 'EdgeColor', [1 0 0]);
+%     rectangle('position',[yPositionOfOneValue(quarterNumberOfXElements), xPositionOfOneValue(quarterNumberOfXElements), patternWidth, patternWidth], 'EdgeColor',[1 0 0]);
+    
 end
 
