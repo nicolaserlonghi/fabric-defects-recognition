@@ -8,7 +8,7 @@
 % startPatternX: l'indice di colonna del punto di partenza del pattern di partenza
 % startPatternY: l'indice di riga del punto di partenza del pattern di
 % partenza
-% patternWidth: TODO: che è?
+% patternWidth: dimensione standard del pattern finale 
 % threshold: threshold di partenza
 % startPatternWidth: dimensione del pattern di partenza
 %
@@ -26,7 +26,7 @@ function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(im
     % il numero di pixel che non contengono errori
     % non sia superiore al 85% del numero dei pixel presenti nell'immagine
     startPattern = image(startPatternX : (startPatternX + patternStartWidth), startPatternY : (startPatternY + patternStartWidth));
-    % TODO: conv2(image, pattern);
+    % conv2(image, pattern);
     convolvedImage = real(ifft2(fft2(image) .* fft2(startPattern, imageSizeY, imageSizeX)));
     imageWithThreshold = applyThreshold(convolvedImage, threshold);
     [yPositionOfOneValue, xPositionOfOneValue] = find(imageWithThreshold == 1);
@@ -77,7 +77,6 @@ function [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(im
     pattern4 = image(yPositionOfOneValue(quarterNumberOfXElements) : yPositionOfOneValueWithPatternWidth(quarterNumberOfXElements), xPositionOfOneValue(quarterNumberOfXElements) : xPositionOfOneValueWithPatternWidth(quarterNumberOfXElements));
     
     % Visualizza gli step del processo di cui sopra.
-    % TODO: lo teniamo?
     %{
     figure; title 'TDF';
     subplot(221); imshow(image); title 'Immagine con pattern di partenza';

@@ -6,14 +6,11 @@
 %
 % Questo programma è stato sviluppato e testato con immagini 512x512 di
 % tessiture di vario colore, motivo e difetto.
-% TODO: aggiungere altri vincoli
 
 clear all;
 close all;
 clc;
 
-% Mostro tutte le immagini una dopo l'altra. Il "vero programma" si trova
-% nei file recognition.m, loadImage.m, getPatterns.m e applyThreshold.m
 nOfImages = 31;
 images = cell(nOfImages);
 finalImages = cell(nOfImages);

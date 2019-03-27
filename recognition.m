@@ -26,7 +26,7 @@ function [image, finalImage, mask, finalMask] = recognition(imageIndex)
     [pattern1, pattern2, pattern3, pattern4, patternWidth] = getPatterns(image, startPatternX, startPatternY, patternWidth, threshold, patternStartWidth);
 
     % Viene calcolata la cross-correlazione normalizzata utilizzando i quattro
-    % pattern restituiti dalla funzione precednete
+    % pattern restituiti dalla funzione precedente
     normxcorrImage1 = normxcorr2(pattern1, image);
     normxcorrImage2 = normxcorr2(pattern2, image);
     normxcorrImage3 = normxcorr2(pattern3, image);
@@ -65,7 +65,6 @@ function [image, finalImage, mask, finalMask] = recognition(imageIndex)
     se = strel('disk', diskSize);
     finalMask = imopen(mask, se);
     
-    % TODO: controllare commenti e rinominare variabili
     % conta il numero di pixel gialli, cioè relativi all'errore
     errorDots = find(finalMask == 1);
     nOfErrorDots = size(errorDots);
@@ -82,8 +81,6 @@ function [image, finalImage, mask, finalMask] = recognition(imageIndex)
         nOfErrorDots = size(errorDots);
     end
     
-    % Ricalcolo le dimensioni dell'immagine iniziale ignorando i bordi
-    % che contengono valori di cross-correlazione invalidi (TODO: è giusto?)
     diffr = xcorrY - yImageSize;
     diffc = xcorrX - xImageSize;
     image = image(floor(diffr / 2) : end - round(diffr / 2), floor(diffc / 2) : end - round(diffc / 2));
